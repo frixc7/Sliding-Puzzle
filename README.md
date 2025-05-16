@@ -4,15 +4,16 @@ A JavaFX implementation of the classic Sliding Puzzle game.
 
 ## Features
 
-- Configurable puzzle layouts (3x3 grid)
+- Puzzle Selection
 - Move tracking
 - Scoring system
-- Game controls (Rearrange, Shuffle)
+- Game controls
 
-## Requirements
+## Tech Stack
 
-- Java 17 or higher
-- Maven
+- Java
+- JavaFX
+- PlantUML (for UML diagrams)
 
 ## How to Run
 
@@ -23,11 +24,9 @@ A JavaFX implementation of the classic Sliding Puzzle game.
 ## Game Instructions
 
 - Click on a tile adjacent to the empty space to move it
-- Rearrange the tiles to match the target configuration
-- Try to solve the puzzle with the fewest moves to achieve a high score
+- Rearrange the tiles to get the following configuration: 123456780
 
 ## UML Diagrams
 
-All UML diagrams are stored in the `umls` directory.
-
-All exported versions of the UML diagrams are stored in the `out/umls` directory.
+- All UML diagrams are stored in the `umls` directory.
+- All exported versions of the UML diagrams are stored in the `out/umls` directory.
