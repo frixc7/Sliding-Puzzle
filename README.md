@@ -17,6 +17,10 @@ A JavaFX implementation of the classic Sliding Puzzle game.
 
 ## How to Run
 
+### Method 1
+Run `sliding-puzzle-1.0-SNAPSHOT.jar` located in `target/`
+
+### Method 2
 1. Clone the repository
 2. Build the project: `mvn clean package`
 3. Run the application: `mvn javafx:run`
