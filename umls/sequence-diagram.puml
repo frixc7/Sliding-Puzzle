@@ -1,0 +1,101 @@
+@startuml SlidingPuzzleSequenceDiagram
+
+title Sliding Puzzle Game - "Move Tile" Sequence Diagram
+
+' Custom styling
+skinparam sequenceArrowThickness 2
+skinparam participantBorderColor #999999
+skinparam participantBackgroundColor #f0f0f0
+skinparam noteBorderColor #999999
+skinparam noteBackgroundColor #f5f5f5
+
+' Participants
+actor Player
+participant "PuzzleView" as View
+participant "PuzzleController" as Controller
+participant "PuzzleBoard" as Board
+participant "TranslateTransition" as Animation
+
+' Sequence
+Player -> View : Click on tile (row, col)
+activate View
+
+View -> Controller : isMoveValid(row, col)
+activate Controller
+Controller -> Board : getEmptyRow()
+activate Board
+Board --> Controller : emptyRow
+deactivate Board
+Controller -> Board : getEmptyCol()
+activate Board
+Board --> Controller : emptyCol
+deactivate Board
+Controller --> View : moveIsValid (boolean)
+deactivate Controller
+
+alt move is valid
+    ' Store empty position before move
+    View -> Controller : getBoard().getEmptyRow()
+    activate Controller
+    Controller --> View : emptyRow
+    deactivate Controller
+    
+    View -> Controller : getBoard().getEmptyCol()
+    activate Controller
+    Controller --> View : emptyCol
+    deactivate Controller
+    
+    ' Make the move
+    View -> Controller : makeMove(row, col)
+    activate Controller
+    
+    Controller -> Board : moveTile(row, col)
+    activate Board
+    note right
+      Swaps tile with empty space
+      and updates empty position
+    end note
+    Board --> Controller : moveSuccess (boolean)
+    deactivate Board
+    
+    ' Check if game is won
+    Controller -> Board : isGoalState()
+    activate Board
+    Board --> Controller : isGoal (boolean)
+    deactivate Board
+    
+    alt isGoal == true
+        Controller -> Controller : gameWon = true
+        Controller -> Controller : stopTimer()
+        
+        alt score > bestScore
+            Controller -> Controller : bestScore = score
+        end
+    end
+    
+    Controller --> View : moveSuccess (boolean)
+    deactivate Controller
+    
+    ' Animate the tile movement
+    View -> Animation : create(Duration.millis(150), tileButton)
+    activate Animation
+    View -> Animation : setByX(moveX)
+    View -> Animation : setByY(moveY)
+    View -> Animation : play()
+    
+    Animation --> View : onFinished
+    deactivate Animation
+    
+    ' Update UI after animation
+    View -> View : updatePuzzleGrid()
+    View -> View : updateInfoLabels()
+    
+    ' Check if game is won
+    alt controller.isGameWon()
+        View -> View : showWinMessage()
+    end
+end
+
+deactivate View
+
+@enduml

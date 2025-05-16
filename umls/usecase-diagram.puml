@@ -1,0 +1,59 @@
+@startuml SlidingPuzzleUseCases
+
+title Sliding Puzzle Game - Use Case Diagram
+
+left to right direction
+
+' Actor definition
+actor Player as player
+
+' Use cases definition
+rectangle "Sliding Puzzle Game" {
+  usecase "Start Game" as UC1
+  usecase "Move Tile" as UC2
+  usecase "View Game Status" as UC3
+  usecase "Track Best Score" as UC4
+  usecase "Rearrange Puzzle" as UC5
+  usecase "Shuffle Puzzle" as UC6
+  usecase "Complete Puzzle" as UC7
+  usecase "Track Time" as UC8
+}
+
+' Relationships
+player --> UC1
+player --> UC2
+player --> UC3
+player --> UC5
+player --> UC6
+
+UC1 ..> UC8 : <<include>>
+UC2 ..> UC4 : <<include>>
+UC2 ..> UC7 : <<extend>>
+UC2 ..> UC3 : <<include>>
+UC7 ..> UC8 : <<include>>
+UC5 ..> UC8 : <<include>>
+UC6 ..> UC8 : <<include>>
+
+note right of UC1
+  Player can start with default
+  or selected configuration
+end note
+
+note right of UC2
+  Tile can only be moved
+  if adjacent to empty space
+end note
+
+note right of UC3
+  Shows moves remaining,
+  current score, best score,
+  and elapsed time
+end note
+
+note right of UC7
+  Triggered when player
+  completes the puzzle
+  arrangement
+end note
+
+@enduml

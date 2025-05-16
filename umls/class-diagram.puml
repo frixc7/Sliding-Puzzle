@@ -1,0 +1,143 @@
+@startuml SlidingPuzzleClassDiagram
+
+title Sliding Puzzle Game - Class Diagram
+
+' Custom styling
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classFontSize 14
+skinparam classBackgroundColor #f0f0f0
+skinparam classBorderColor #999999
+
+' Model package
+package "com.slidingpuzzle.model" {
+  class PuzzleBoard {
+    - board: int[][]
+    - emptyRow: int
+    - emptyCol: int
+    - size: int = 3
+    - goalState: int[][]
+    + PuzzleBoard()
+    + PuzzleBoard(configuration: String)
+    - initializeGoalState(): int[][]
+    - initializeBoard(configuration: String): void
+    + moveTile(row: int, col: int): boolean
+    + isGoalState(): boolean
+    + getValue(row: int, col: int): int
+    + getSize(): int
+    + getEmptyRow(): int
+    + getEmptyCol(): int
+  }
+}
+
+' Controller package
+package "com.slidingpuzzle.controller" {
+  class PuzzleController {
+    - board: PuzzleBoard
+    - moves: int
+    - score: int
+    - bestScore: int
+    - gameWon: boolean
+    - currentConfiguration: String
+    - startTime: long
+    - elapsedTime: long
+    - timerRunning: boolean
+    - timer: Timer
+    - timerTask: TimerTask
+    - timerCallback: TimerUpdateCallback
+    + PuzzleController()
+    + PuzzleController(configuration: String)
+    + makeMove(row: int, col: int): boolean
+    + isMoveValid(row: int, col: int): boolean
+    + resetToConfiguration(configuration: String): void
+    + resetToCurrent(): void
+    + reset(configuration: String): void
+    + isGameWon(): boolean
+    + getBoard(): PuzzleBoard
+    + getMoves(): int
+    + getScore(): int
+    + getBestScore(): int
+    - initializeTimer(): void
+    + startTimer(): void
+    + stopTimer(): void
+    + resetTimer(): void
+    + setTimerCallback(callback: TimerUpdateCallback): void
+    + getElapsedTime(): long
+  }
+  
+  interface TimerUpdateCallback {
+    + onTimerUpdate(elapsedTimeMillis: long): void
+  }
+}
+
+' View package
+package "com.slidingpuzzle.view" {
+  class PuzzleView {
+    - controller: PuzzleController
+    - puzzleGrid: GridPane
+    - movesLabel: Label
+    - scoreLabel: Label
+    - bestScoreLabel: Label
+    - timerLabel: Label
+    - tileButtons: Button[][]
+    - animationInProgress: boolean
+    + PuzzleView()
+    + PuzzleView(configuration: String)
+    - initializeUI(): void
+    - setupPuzzleGrid(): void
+    - updatePuzzleGrid(): void
+    - handleTileClick(row: int, col: int): void
+    - updateInfoLabels(): void
+    - updateTimerLabel(elapsedTimeMillis: long): void
+    - startTimer(): void
+    - showWinMessage(): void
+    - createTileButton(value: int): Button
+    - animateTileMovement(fromRow: int, fromCol: int, toRow: int, toCol: int): void
+    - setupControlPanel(): void
+    - setupInfoPanel(): void
+  }
+}
+
+' Main application class
+package "com.slidingpuzzle" {
+  class SlidingPuzzleApp {
+    + start(stage: Stage): void
+    + main(args: String[]): void
+  }
+}
+
+' External classes/interfaces from JavaFX
+class BorderPane
+class Application
+
+' Relationships
+PuzzleController o--> "1" PuzzleBoard : contains >
+PuzzleView o--> "1" PuzzleController : contains >
+PuzzleView --|> BorderPane : extends >
+SlidingPuzzleApp o--> "1" PuzzleView : creates >
+SlidingPuzzleApp --|> Application : extends >
+PuzzleController +-- TimerUpdateCallback : defines >
+PuzzleView ..|> TimerUpdateCallback : implements >
+
+' Notes
+note bottom of PuzzleBoard
+  Model class responsible for 
+  the puzzle's state and rules
+end note
+
+note bottom of PuzzleController
+  Controller class that manages
+  game logic and connects model with view
+end note
+
+note bottom of PuzzleView
+  View class that displays the puzzle
+  and handles user interactions
+end note
+
+note right of TimerUpdateCallback
+  Interface for timer update
+  notifications to the view
+end note
+
+@enduml
