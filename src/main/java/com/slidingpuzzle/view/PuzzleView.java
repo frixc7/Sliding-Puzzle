@@ -3,6 +3,7 @@ package com.slidingpuzzle.view;
 import com.slidingpuzzle.controller.PuzzleController;
 import com.slidingpuzzle.model.PuzzleBoard;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.application.Platform;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Alert;
@@ -15,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 public class PuzzleView extends BorderPane {
     private PuzzleController controller;
@@ -25,6 +27,18 @@ public class PuzzleView extends BorderPane {
     private Label timerLabel; // Label to display the timer
     private Button[][] tileButtons; // Store references to tile buttons
     private boolean animationInProgress = false; // Flag to prevent multiple animations at once
+    private BorderPane gamePane; // Container for the game UI
+    private VBox selectionPane; // Container for the puzzle selection UI
+    
+    // Configuration names for better readability in selection UI
+    private final String[] configNames = {
+        "Puzzle 1", "Puzzle 2", "Puzzle 3", "Puzzle 4", "Puzzle 5", "Puzzle 6", "Puzzle 7"
+    };
+    
+    // Predefined configurations
+    private final String[] configurations = {
+        "073214568", "124857063", "204153876", "624801753", "670132584", "781635240", "280163547"
+    };
     
     public PuzzleView() {
         this.controller = new PuzzleController();
@@ -37,10 +51,21 @@ public class PuzzleView extends BorderPane {
     }
     
     private void initializeUI() {
+        // Create containers for different UI states
+        gamePane = new BorderPane();
+        selectionPane = new VBox(20);
+        selectionPane.setAlignment(Pos.CENTER);
+        
+        // Setup the game UI in the game pane
         setupPuzzleGrid();
         setupControlPanel();
         setupInfoPanel();
-        startTimer();
+        
+        // Setup the selection UI
+        setupSelectionPane();
+        
+        // Initially show the selection screen
+        showSelectionScreen();
     }
     
     private void setupPuzzleGrid() {
@@ -55,7 +80,7 @@ public class PuzzleView extends BorderPane {
         
         updatePuzzleGrid();
         
-        setCenter(puzzleGrid);
+        gamePane.setCenter(puzzleGrid);
     }
     
     private void updatePuzzleGrid() {
@@ -180,6 +205,7 @@ public class PuzzleView extends BorderPane {
     private void setupControlPanel() {
         HBox controlPanel = new HBox(10);
         controlPanel.setPadding(new Insets(10));
+        controlPanel.setAlignment(Pos.CENTER);
         
         Button rearrangeButton = new Button("Rearrange");
         rearrangeButton.setOnAction(e -> {
@@ -191,15 +217,21 @@ public class PuzzleView extends BorderPane {
         Button shuffleButton = new Button("Shuffle");
         shuffleButton.setOnAction(e -> {
             // Randomly select one configuration from the preset list
-            String[] configurations = {"073214568", "124857063", "204153876", "624801753", "670132584", "781635240", "280163547"};
             int randomIndex = (int) (Math.random() * configurations.length);
             controller.reset(configurations[randomIndex]);
             updatePuzzleGrid();
             updateInfoLabels();
         });
         
-        controlPanel.getChildren().addAll(rearrangeButton, shuffleButton);
-        setBottom(controlPanel);
+        Button selectPuzzleButton = new Button("Return");
+        selectPuzzleButton.setOnAction(e -> {
+            // Stop the timer and return to selection screen
+            controller.stopTimer();
+            showSelectionScreen();
+        });
+        
+        controlPanel.getChildren().addAll(rearrangeButton, shuffleButton, selectPuzzleButton);
+        gamePane.setBottom(controlPanel);
     }
     
     private void setupInfoPanel() {
@@ -222,6 +254,72 @@ public class PuzzleView extends BorderPane {
         infoPanel.setPadding(new Insets(10));
         infoPanel.getChildren().addAll(titleLabel, movesLabel, scoreLabel, bestScoreLabel, timerLabel);
         
-        setRight(infoPanel);
+        gamePane.setRight(infoPanel);
+    }
+    
+    /**
+     * Sets up the puzzle selection UI
+     */
+    private void setupSelectionPane() {
+        Label titleLabel = new Label("Select Puzzle Configuration");
+        titleLabel.setFont(Font.font(24));
+        titleLabel.setTextAlignment(TextAlignment.CENTER);
+        
+        GridPane configGrid = new GridPane();
+        configGrid.setHgap(10);
+        configGrid.setVgap(10);
+        configGrid.setAlignment(Pos.CENTER);
+        configGrid.setPadding(new Insets(20));
+        
+        // Create buttons for each configuration
+        for (int i = 0; i < configurations.length; i++) {
+            final int index = i;
+            Button configButton = new Button(configNames[i] + " - " + configurations[i]);
+            configButton.setPrefWidth(200);
+            configButton.setPrefHeight(50);
+            configButton.setStyle("-fx-font-size: 14px;");
+            
+            configButton.setOnAction(e -> {
+                selectPuzzleConfiguration(configurations[index]);
+            });
+            
+            // Add to grid, 2 buttons per row
+            configGrid.add(configButton, i % 2, i / 2);
+        }
+        
+        selectionPane.getChildren().addAll(titleLabel, configGrid);
+    }
+    
+    /**
+     * Selects a puzzle configuration and starts the game
+     */
+    private void selectPuzzleConfiguration(String configuration) {
+        // Initialize or reset controller with selected configuration
+        if (controller == null) {
+            controller = new PuzzleController(configuration);
+        } else {
+            controller.resetToConfiguration(configuration);
+        }
+        
+        updatePuzzleGrid();
+        updateInfoLabels();
+        showGameScreen();
+        startTimer();
+    }
+    
+    /**
+     * Shows the game screen
+     */
+    private void showGameScreen() {
+        getChildren().clear();
+        setCenter(gamePane);
+    }
+    
+    /**
+     * Shows the puzzle selection screen
+     */
+    private void showSelectionScreen() {
+        getChildren().clear();
+        setCenter(selectionPane);
     }
 } 
