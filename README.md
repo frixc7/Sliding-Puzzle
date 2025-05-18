@@ -32,6 +32,7 @@ A JavaFX implementation of the classic Sliding Puzzle game.
 - The current JAR is built for Linux and contains platform-specific JavaFX libraries
 - For Windows/macOS, build a platform-specific JAR or run via command line
 - Ensure your system is configured to open JAR files with Java
+- Make sure to give permissions to execute the JAR file
 
 ## Game Instructions
 
