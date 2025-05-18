@@ -67,6 +67,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <name>SlidingPuzzle</name>
+                    <appVersion>1.0.0</appVersion>
+                    <vendor>SlidingPuzzle</vendor>
+                    <destination>target/dist</destination>
+                    <module>javafx.controls,javafx.fxml</module>
+                    <runtimeImage>target/image</runtimeImage>
+                    <mainClass>com.slidingpuzzle.SlidingPuzzleAppLauncher</mainClass>
+                    <javaOptions>
+                        <option>-Dfile.encoding=UTF-8</option>
+                    </javaOptions>
+                    <type>DEFAULT</type>
+                    <winShortcut>true</winShortcut>
+                    <winMenu>true</winMenu>
+                    <linuxShortcut>true</linuxShortcut>
+                    <linuxMenuGroup>Games</linuxMenuGroup>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project> 
